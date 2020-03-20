@@ -662,15 +662,6 @@ async def event_friend_message(message: fortnitepy.FriendMessage) -> None:
 
         await client.user.party.me.set_emote(asset=member.emote)
 
- elif "!cadeau" in args[0].lower():
-        await client.user.party.me.clear_emote()
-
-        await client.user.party.me.set_emote(
-            asset='EID_NeverGonna'
-        )
-
-        await message.reply('T\' a cru que t\'aller avoir un cadeau ?!?')
-
     elif "!matchmakingcode" in args[0].lower():
         await client.user.party.set_custom_key(
             key=content
