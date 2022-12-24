@@ -1,6 +1,7 @@
 from dotenv import load_dotenv
-from fortnitepy import AdvancedAuth, ReadyState
+from fortnitepy import AdvancedAuth, ReadyState, OutgoingPendingFriend
 from fortnitepy.ext import commands
+from lib import Color
 import com
 import json
 import os
@@ -26,10 +27,11 @@ bot = commands.Bot(
         **get_auth_details().get(os.getenv('EMAIL'), {})
     ),
     status="BOXFIGHT, BIOS ZONE WARS, FFA, BOX PVP",
-    owner_id=os.getenv('OWNER_ID'),
+    owner_ids=os.getenv('OWNER_IDS'),
 )
 bot.add_all_mode = True
 bot.owner_only = True
+bot.research_mode = False
 
 bot.add_cog(com.PartyCommands(bot))
 bot.add_cog(com.CosmeticCommands(bot))
@@ -47,42 +49,48 @@ async def event_device_auth_generate(details, email):
 
 @bot.event
 async def event_ready():
-    print(f"Connecté en tant que {bot.user.display_name}")
+    print(f"{Color.GREEN}Connecté en tant que {bot.user.display_name} ({bot.user.id})")
     for friend in bot.incoming_pending_friends:
         await friend.accept()
 
 
 @bot.event
 async def event_friend_request(request):
-    try:
+    if isinstance(request, OutgoingPendingFriend):
+        print(
+            f"{Color.BLUE}[Amis] {Color.LIGHT_BLUE}Demande envoyée à {request.display_name} ({request.id})")
+    else:
         await request.accept()
-    except:
-        pass
+        print(
+            f"{Color.BLUE}[Amis] {Color.LIGHT_BLUE}Demande acceptée de {request.display_name} ({request.id})")
 
 
 @bot.event
 async def event_party_invite(invitation):
     if await bot.is_owner(invitation.sender.id):
         await invitation.accept()
-        await bot.party.me.set_ready(ReadyState.SITTING_OUT)
+        print(
+            f"{Color.RED}[Groupe] {Color.LIGHT_RED}Invitation acceptée de {invitation.sender.display_name} ({invitation.sender.id})")
         if bot.add_all_mode:
-            success = []
-            failed = []
             for member in invitation.party.members:
                 try:
                     await member.add()
-                    success.append(member.display_name)
                 except:
-                    failed.append(member.display_name)
-            print(f"Amis ajoutés ({len(success)}): {', '.join(success)}")
+                    pass
 
 
 @bot.event
 async def event_party_member_join(member):
+    if member.id == bot.user.id:
+        print(f"{Color.RED}[Groupe] {Color.LIGHT_RED}Rejoint la partie de {bot.party.leader.display_name} ({bot.party.leader.id}): {bot.party.member_count} membre(s)")
+        try:
+            await bot.party.me.set_ready(ReadyState.SITTING_OUT)
+        except:
+            pass
+        return
     if bot.add_all_mode:
         try:
             await member.add()
-            print(f"Amis ajoutés: {member.display_name}")
         except:
             pass
 
