@@ -408,16 +408,20 @@ class MiscCommands(commands.Cog):
     @commands.dm_only()
     @commands.command(
         name="findparty",
-        aliases=["party"],
+        aliases=["party", "partie", "game", "jeu"],
         description="Trouver une partie",
     )
     async def findparty(self, ctx: commands.Context, *, join: Optional[str] = "on") -> None:
         partylist = {}
+        cached = []
         message = "Parties disponibles :\n"
         await ctx.send("Recherche de parties...")
         for friend in self.bot.friends:
             try:
                 party = await friend.join_party()
+                if party.id in cached:
+                    continue
+                cached.append(party.id)
                 partylist[friend.display_name] = party.member_count - 1
             except:
                 pass
