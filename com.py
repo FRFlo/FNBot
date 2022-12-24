@@ -445,6 +445,23 @@ class MiscCommands(commands.Cog):
                 await self.bot.party.invite(ctx.author.id)
             except:
                 await ctx.send("Impossible de rejoindre la partie")
+    
+    @commands.dm_only()
+    @commands.command(
+        name="friendlist",
+        aliases=["friends"],
+        description="Afficher la liste d'amis",
+    )
+    async def friendlist(self, ctx: commands.Context) -> None:
+        message = f"Liste d'amis ({len([value for value in self.bot.friends if value.is_online])}):\n"
+        console_message = "Liste d'amis: "
+        for friend in self.bot.friends:
+            if friend.is_online:
+                message += f"{friend.display_name} ({friend.platform or '?'})\n"
+                console_message += f"{friend.display_name}, "
+        
+        await ctx.send(message)
+        print(console_message)
 
     @commands.dm_only()
     @commands.command(
@@ -466,3 +483,126 @@ class MiscCommands(commands.Cog):
             await ctx.send("Le bot ne va pas ajouter tous les membres du groupe en amis")
         else:
             await ctx.send("Mode invalide")
+
+    @commands.dm_only()
+    @commands.command(
+        name="resmode",
+        description="Défini si le bot doit découvrir et ajouter tous les membres des groupes en amis",
+    )
+    async def resmode(self, ctx: commands.Context, *, mode: str, time: Optional[int] = 0) -> None:
+        await sleep(time)
+        if mode == "on":
+            self.bot.research_mode = True
+            await ctx.send("Le bot va découvrir et ajouter tous les membres des groupes en amis")
+
+            while self.bot.research_mode:
+                print(f"{Color.MAGENTA}[RESMODE] {Color.LIGHT_MAGENTA}Recherche de groupes en cours...")
+                added = []
+                cached = []
+                for friend in self.bot.friends:
+                    try:
+                        party = await friend.join_party()
+                        if party.id in cached:
+                            continue
+                        for member in party.members:
+                            try:
+                                await member.add()
+                                added.append(member.display_name)
+                                cached.append(party.id)
+                            except:
+                                pass
+                    except:
+                        pass
+                await self.bot.party.me.leave()
+                print(f"{Color.MAGENTA}[RESMODE] {Color.LIGHT_MAGENTA}Recherche de groupes terminée.\nAmis ajoutés ({len(added)}): {', '.join(added)}")
+                await sleep(600)
+        elif mode == "off":
+            self.bot.research_mode = False
+            await ctx.send("Le bot ne va plus découvrir et ajouter tous les membres des groupes en amis")
+        elif mode == "status":
+            if self.bot.research_mode:
+                await ctx.send("Le bot est en mode recherche")
+            else:
+                await ctx.send("Le bot n'est pas en mode recherche")
+        elif mode == "now":
+            print(f"{Color.MAGENTA}[RESMODE] {Color.LIGHT_MAGENTA}Recherche de groupes en cours...")
+            added = []
+            cached = []
+            for friend in self.bot.friends:
+                try:
+                    party = await friend.join_party()
+                    if party.id in cached:
+                        continue
+                    for member in party.members:
+                        try:
+                            await member.add()
+                            added.append(member.display_name)
+                            cached.append(party.id)
+                        except:
+                            pass
+                except:
+                    pass
+            await self.bot.party.me.leave()
+            await ctx.send(f"Recherche de groupes terminée.\nAmis ajoutés ({len(added)}): {', '.join(added)})")
+        else:
+            await ctx.send("Mode invalide")
+    
+    @commands.dm_only()
+    @commands.command(
+        name="block",
+        description="Bloquer un joueur",
+    )
+    async def block(self, ctx: commands.Context, *, user: str) -> None:
+        user = await self.bot.fetch_user(user)
+        friend = self.bot.get_friend(user.id)
+
+        try:
+            await friend.block()
+            await ctx.send(f"{friend.display_name} a été bloqué")
+        except:
+            await ctx.send("Impossible de bloquer le joueur")
+    
+    @commands.dm_only()
+    @commands.command(
+        name="unblock",
+        description="Débloquer un joueur",
+    )
+    async def unblock(self, ctx: commands.Context, *, user: str) -> None:
+        user = await self.bot.fetch_user(user)
+        friend = self.bot.get_friend(user.id)
+
+        try:
+            await friend.unblock()
+            await ctx.send(f"{friend.display_name} a été débloqué")
+        except:
+            await ctx.send("Impossible de débloquer le joueur")
+    
+    @commands.dm_only()
+    @commands.command(
+        name="add",
+        description="Ajouter un joueur en ami",
+    )
+    async def add(self, ctx: commands.Context, *, user: str) -> None:
+        user = await self.bot.fetch_user(user)
+        friend = self.bot.get_friend(user.id)
+
+        try:
+            await friend.add()
+            await ctx.send(f"{friend.display_name} a été ajouté en ami")
+        except:
+            await ctx.send("Impossible d'ajouter le joueur en ami")
+
+    @commands.dm_only()
+    @commands.command(
+        name="remove",
+        description="Retirer un joueur de la liste d'amis",
+    )
+    async def remove(self, ctx: commands.Context, *, user: str) -> None:
+        user = await self.bot.fetch_user(user)
+        friend = self.bot.get_friend(user.id)
+
+        try:
+            await friend.remove()
+            await ctx.send(f"{friend.display_name} a été retiré de la liste d'amis")
+        except:
+            await ctx.send("Impossible de retirer le joueur de la liste d'amis")
