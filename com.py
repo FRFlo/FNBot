@@ -2,6 +2,7 @@ from asyncio import sleep
 from fortnitepy.ext import commands
 from fortnitepy import ReadyState, Friend, Optional
 from FortniteAPIAsync import APIClient
+from lib import Color
 
 
 class PartyCommands(commands.Cog):
@@ -37,7 +38,6 @@ class PartyCommands(commands.Cog):
         try:
             await member.promote()
             await ctx.send(f"{member.display_name} a été promu chef du groupe")
-            print((f"{member.display_name} a été promu chef du groupe"))
         except:
             await ctx.send("Je ne suis pas chef du groupe")
 
@@ -60,7 +60,6 @@ class PartyCommands(commands.Cog):
         try:
             await member.kick()
             await ctx.send(f"{member.display_name} a été expulsé du groupe")
-            print(f"{member.display_name} a été expulsé du groupe")
         except:
             await ctx.send("Je ne suis pas chef du groupe")
 
@@ -85,7 +84,6 @@ class PartyCommands(commands.Cog):
             try:
                 await epic_friend.invite()
                 await ctx.send(f"Invitation envoyée à {epic_friend.display_name}")
-                print(f"Invitation envoyée à {epic_friend.display_name}")
             except:
                 await ctx.send(f"Impossible d'inviter {epic_friend.display_name} dans le groupe")
         else:
@@ -112,7 +110,6 @@ class PartyCommands(commands.Cog):
             try:
                 await epic_friend.request_to_join()
                 await ctx.send(f"Demande envoyée à {epic_friend.display_name}")
-                print(f"Demande envoyée à {epic_friend.display_name}")
             except:
                 await ctx.send(f"Impossible d'envoyer une demande à {epic_friend.display_name}")
         else:
@@ -139,7 +136,6 @@ class PartyCommands(commands.Cog):
             try:
                 await epic_friend.join_party()
                 await ctx.send(f"Rejoins {epic_friend.display_name}")
-                print(f"Rejoins {epic_friend.display_name}")
             except:
                 await ctx.send(f"Impossible de rejoindre {epic_friend.display_name}")
         else:
@@ -160,7 +156,6 @@ class PartyCommands(commands.Cog):
             except:
                 failed.append(friend.display_name)
         await ctx.send(f"Invitations envoyées ({len(success)}): {', '.join(success)}")
-        print(f"Invitations envoyées ({len(success)}): {', '.join(success)}")
         if failed:
             await ctx.send(f"Invitations non envoyées ({len(failed)}): {', '.join(failed)}")
 
@@ -179,7 +174,6 @@ class PartyCommands(commands.Cog):
             except:
                 failed.append(friend.display_name)
         await ctx.send(f"Demandes envoyées ({len(success)}): {', '.join(success)}")
-        print(f"Demandes envoyées ({len(success)}): {', '.join(success)}")
         if failed:
             await ctx.send(f"Demandes non envoyées ({len(failed)}): {', '.join(failed)}")
 
@@ -198,7 +192,6 @@ class PartyCommands(commands.Cog):
             except:
                 failed.append(member.display_name)
         await ctx.send(f"Amis ajoutés ({len(success)}): {', '.join(success)}")
-        print(f"Amis ajoutés ({len(success)}): {', '.join(success)}")
         if failed:
             await ctx.send(f"Amis non ajoutés ({len(failed)}): {', '.join(failed)}")
 
@@ -210,7 +203,6 @@ class PartyCommands(commands.Cog):
     async def ready(self, ctx: commands.Context) -> None:
         await self.bot.party.me.set_ready(ReadyState.READY)
         await ctx.send("Prêt à jouer")
-        print("Prêt à jouer")
 
     @commands.dm_only()
     @commands.command(
@@ -220,7 +212,6 @@ class PartyCommands(commands.Cog):
     async def unready(self, ctx: commands.Context) -> None:
         await self.bot.party.me.set_ready(ReadyState.NOT_READY)
         await ctx.send("Ne pas être prêt à jouer")
-        print("Ne pas être prêt à jouer")
 
     @commands.dm_only()
     @commands.command(
@@ -230,7 +221,6 @@ class PartyCommands(commands.Cog):
     async def sitout(self, ctx: commands.Context) -> None:
         await self.bot.party.me.set_ready(ReadyState.SITTING_OUT)
         await ctx.send("Ne pas jouer")
-        print("Ne pas jouer")
 
     @commands.dm_only()
     @commands.command(
@@ -463,7 +453,6 @@ class MiscCommands(commands.Cog):
             message += f"{key}: {value} membres\n"
         
         await ctx.send(message)
-        print(message)
 
         keylist = [str(key) for key in cleanlist.keys()]
 
