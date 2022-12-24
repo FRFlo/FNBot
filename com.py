@@ -442,7 +442,6 @@ class MiscCommands(commands.Cog):
 
             try:
                 await friend.join_party()
-                await self.bot.party.me.set_ready(ReadyState.SITTING_OUT)
                 await self.bot.party.invite(ctx.author.id)
             except:
                 await ctx.send("Impossible de rejoindre la partie")
