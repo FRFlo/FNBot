@@ -222,30 +222,6 @@ class PartyCommands(commands.Cog):
         await self.bot.party.me.set_ready(ReadyState.SITTING_OUT)
         await ctx.send("Ne pas jouer")
 
-    @commands.dm_only()
-    @commands.command(
-        name="addallmode",
-        description="Défini si le bot doit ajouter tous les membres du groupe en amis",
-    )
-    async def addallmode(self, ctx: commands.Context, *, mode: str) -> None:
-        if mode == "on":
-            self.bot.add_all_mode = True
-            for member in self.bot.party.members:
-                try:
-                    await member.add()
-                    await ctx.send(f"Ajouté {member.display_name} en ami")
-                    print(f"Ajouté {member.display_name} en ami")
-                except:
-                    pass
-            await ctx.send("Le bot va ajouter tous les membres du groupe en amis")
-            print("Le bot va ajouter tous les membres du groupe en amis")
-        elif mode == "off":
-            self.bot.add_all_mode = False
-            await ctx.send("Le bot ne va pas ajouter tous les membres du groupe en amis")
-            print("Le bot ne va pas ajouter tous les membres du groupe en amis")
-        else:
-            await ctx.send("Mode invalide")
-
 
 class CosmeticCommands(commands.Cog):
     def __init__(self, bot: commands.Bot) -> None:
@@ -466,3 +442,24 @@ class MiscCommands(commands.Cog):
                 await self.bot.party.invite(ctx.author.id)
             except:
                 await ctx.send("Impossible de rejoindre la partie")
+
+    @commands.dm_only()
+    @commands.command(
+        name="addallmode",
+        description="Défini si le bot doit ajouter tous les membres du groupe en amis",
+    )
+    async def addallmode(self, ctx: commands.Context, *, mode: str) -> None:
+        if mode == "on":
+            self.bot.add_all_mode = True
+            for member in self.bot.party.members:
+                try:
+                    await member.add()
+                    await ctx.send(f"Ajouté {member.display_name} en ami")
+                except:
+                    pass
+            await ctx.send("Le bot va ajouter tous les membres du groupe en amis")
+        elif mode == "off":
+            self.bot.add_all_mode = False
+            await ctx.send("Le bot ne va pas ajouter tous les membres du groupe en amis")
+        else:
+            await ctx.send("Mode invalide")
