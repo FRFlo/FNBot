@@ -542,6 +542,7 @@ class MiscCommands(commands.Cog):
                 for friend in self.bot.friends:
                     try:
                         party = await friend.join_party()
+                        print(f"{Color.MAGENTA}[RESMODE] {Color.LIGHT_MAGENTA}Rejoint le groupe de {friend.display_name}")
                         if party.id in cached:
                             continue
                         for member in party.members:
@@ -571,6 +572,7 @@ class MiscCommands(commands.Cog):
             for friend in self.bot.friends:
                 try:
                     party = await friend.join_party()
+                    print(f"{Color.MAGENTA}[RESMODE] {Color.LIGHT_MAGENTA}Rejoint le groupe de {friend.display_name}")
                     if party.id in cached:
                         continue
                     for member in party.members:
