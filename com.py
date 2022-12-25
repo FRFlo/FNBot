@@ -197,6 +197,46 @@ class PartyCommands(commands.Cog):
 
     @commands.dm_only()
     @commands.command(
+        name="deleteall",
+        description="Supprimer tous les membres du groupe en amis",
+    )
+    async def deleteall(self, ctx: commands.Context) -> None:
+        success = []
+        failed = []
+        for member in self.bot.party.members:
+            if member.id == ctx.author.id:
+                continue
+            try:
+                await member.delete()
+                success.append(member.display_name)
+            except:
+                failed.append(member.display_name)
+        await ctx.send(f"Amis supprimés ({len(success)}): {', '.join(success)}")
+        if failed:
+            await ctx.send(f"Amis non supprimés ({len(failed)}): {', '.join(failed)}")
+
+    @commands.dm_only()
+    @commands.command(
+        name="blockall",
+        description="Supprimer tous les membres du groupe en amis",
+    )
+    async def blockall(self, ctx: commands.Context) -> None:
+        success = []
+        failed = []
+        for member in self.bot.party.members:
+            if member.id == ctx.author.id:
+                continue
+            try:
+                await member.block()
+                success.append(member.display_name)
+            except:
+                failed.append(member.display_name)
+        await ctx.send(f"Personnes bloquées ({len(success)}): {', '.join(success)}")
+        if failed:
+            await ctx.send(f"Personnes non bloquées ({len(failed)}): {', '.join(failed)}")
+
+    @commands.dm_only()
+    @commands.command(
         name="ready",
         description="Prêt à jouer",
     )
