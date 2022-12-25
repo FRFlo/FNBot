@@ -29,7 +29,7 @@ bot = commands.Bot(
     status="BOXFIGHT, BIOS ZONE WARS, FFA, BOX PVP",
     owner_ids=os.getenv('OWNER_IDS'),
 )
-bot.add_all_mode = True
+bot.add_all_mode = False
 bot.owner_only = True
 bot.research_mode = False
 
@@ -49,9 +49,11 @@ async def event_device_auth_generate(details, email):
 
 @bot.event
 async def event_ready():
-    print(f"{Color.GREEN}Connecté en tant que {bot.user.display_name} ({bot.user.id})")
     for friend in bot.incoming_pending_friends:
         await friend.accept()
+    for friend in bot.outgoing_pending_friends:
+        await friend.cancel()
+    print(f"{Color.GREEN}Connecté en tant que {bot.user.display_name} ({bot.user.id})")
 
 
 @bot.event
